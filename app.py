@@ -79,15 +79,15 @@ def handle_message(event):
             remaining_msg = "⚠️ 預算計算失敗，請稍後再試"
 
     reply = (
-        f"✅ 已記錄：{category} {amount} 元
-"
-        f"💳 工具：{tool}／{method}
-"
-        f"📌 備註：{note}
-"
-        f"{remaining_msg}
-"
-        f"🕒 {formatted_time}"
+        f"""✅ 已記錄：{category} {amount} 元
+"""
+        f"""💳 工具：{tool}／{method}
+"""
+        f"""📌 備註：{note}
+"""
+        f"""{remaining_msg}
+"""
+        f"""🕒 {formatted_time}"""
     )
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
 
