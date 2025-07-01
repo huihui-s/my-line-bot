@@ -2,21 +2,26 @@ from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import os
-import gspread
+import json
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 
 app = Flask(__name__)
 
-line_bot_api = LineBotApi(os.getenv('LINE_CHANNEL_ACCESS_TOKEN'))
-handler = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
+
+# 讀取環境變數中的 Google Service Account JSON 字串，並解析成 dict
+google_creds_json_str = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+google_creds_dict = json.loads(google_creds_json_str)
 
 # Google Sheets 認證
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-client = gspread.authorize(creds)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(google_creds_dict, scope)
+client = json.authorize(creds)
 sheet_record = client.open(os.getenv("GOOGLE_SHEET_NAME")).worksheet("記帳紀錄")
 sheet_budget = client.open(os.getenv("GOOGLE_SHEET_NAME")).worksheet("預算設定")
+
+line_bot_api = LineBotApi(os.getenv('LINE_CHANNEL_ACCESS_TOKEN'))
+handler = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
 
 @app.route("/callback", methods=['POST'])
 def callback():
